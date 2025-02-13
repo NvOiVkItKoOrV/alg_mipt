@@ -1,4 +1,4 @@
-#include "../include/path_convertor.h"
+#include "path_convertor.h"
 
 queue_t* queue_ctor()
 {

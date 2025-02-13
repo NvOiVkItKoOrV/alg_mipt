@@ -1,4 +1,4 @@
-#include "../include/path_convertor.h"
+#include "path_convertor.h"
 
 int main(int argc, char* argv[])
 {

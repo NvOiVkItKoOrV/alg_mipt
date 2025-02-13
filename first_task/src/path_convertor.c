@@ -1,4 +1,4 @@
-#include "../include/path_convertor.h"
+#include "path_convertor.h"
 
 
 void extra_slashes_deleter(const char* str, char* path)

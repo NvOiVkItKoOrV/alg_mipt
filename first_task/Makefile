@@ -27,13 +27,13 @@ $(BIN)my_program: $(OBJ)main.o $(OBJ)path_convertor.o $(OBJ)queue_func.o | $(BIN
 	@ g++ $(FLAGS) $^ -o $@
 
 $(OBJ)main.o: $(SRC)main.c | $(OBJ)
-	@ g++ -c -I./include $(FLAGS) $< -o $@
+	@ g++ -c -I./include $(FLAGS) $< -o $(OBJ)main.o
 
 $(OBJ)path_convertor.o: $(SRC)path_convertor.c | $(OBJ)
-	@ g++ -c -I./include $(FLAGS) $< -o $@
+	@ g++ -c -I./include $(FLAGS) $< -o $(OBJ)path_convertor.o
 
 $(OBJ)queue_func.o: $(SRC)queue_func.c | $(OBJ)
-	@ g++ -c -I./include $(FLAGS) $< -o $@
+	@ g++ -c -I./include $(FLAGS) $< -o $(OBJ)queue_func.o
 
 run: $(BIN)my_program	
 	@ ./$(BIN)my_program /abc/./asdfadsf/dfdsfa/../sadfasdge/a
