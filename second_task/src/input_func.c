@@ -5,19 +5,17 @@ void user_interface()
     bool is_browsing = true;
     size_t jump_counter = 0;
     queue_t* history = queue_ctor();
-    queue_t* url = queue_ctor();
 
     while(is_browsing)
     {  
-        proc_buf_val(&jump_counter, &is_browsing, history, url);
+        proc_buf_val(&jump_counter, &is_browsing, history);
     }
     print_browser_history2stdin(history);
     queue_dtor(history);
-    queue_dtor(url);
 }
 
 
-void proc_buf_val(size_t* jump_counter, bool* is_browsing,  queue_t* history, queue_t* url)
+void proc_buf_val(size_t* jump_counter, bool* is_browsing,  queue_t* history)
 {
     size_t str_len = 0; 
     char* buf = NULL;
@@ -32,64 +30,64 @@ void proc_buf_val(size_t* jump_counter, bool* is_browsing,  queue_t* history, qu
     sscanf(buf,"%s %s\n",command, command_parameter);
     free(buf);
 
-    make_browser_action(command, command_parameter, jump_counter, history, url, is_browsing);
+    make_browser_action(command, command_parameter, jump_counter, history, is_browsing);
 
     free(command);
     free(command_parameter);
 }
 
 
-void make_browser_action(const char* command, const char* command_parameter, size_t* jump_counter, queue_t* history, queue_t* url, bool* is_browsing)
+void make_browser_action(const char* command, const char* command_parameter, size_t* jump_counter, queue_t* history, bool* is_browsing)
 {    
     if(!strcmp(command, "visit"))
     {
         //CHECK COMMAND PARAMETER
-        queue_push(url, command_parameter);
         queue_push(history, command_parameter);
+        history->jump_id = history->tail - 1;
     }
     else if (!strcmp(command, "back") && *jump_counter < MAX_JUMPS_VAL)
     {
         (*jump_counter)++;
         int jump_val = make_a_num(command_parameter);
-        jump_func(BACK, jump_val, history, url);        
+        jump_func(BACK, jump_val, history);        
     }
     else if (!strcmp(command, "forward") && *jump_counter < MAX_JUMPS_VAL)
     {
         (*jump_counter)++;
         int jump_val = make_a_num(command_parameter);
-        jump_func(FORWARD, jump_val, history, url);
+        jump_func(FORWARD, jump_val, history);
     }
     else
         *is_browsing = false;
 }
 
 //TODO: check indexes of data!!!
-void jump_func(side2jump_t side2jump, const int jump_val,  queue_t* history, queue_t* url)
+void jump_func(side2jump_t side2jump, const int jump_val,  queue_t* history)
 {
     switch(side2jump)
     {
     case BACK:
-        url->jump_id = url->tail - jump_val - 1;
-        if (url->jump_id < 0)
+        history->jump_id = history->jump_id - jump_val;
+        if (history->jump_id < 0)
         {
-            url->jump_id = 0;
-            queue_push(history, url->data[url->jump_id]);
+            history->jump_id = 0;
+            queue_push(history, history->data[history->jump_id]);
         }
         else    
         {
-            queue_push(history, url->data[url->jump_id]);
+            queue_push(history, history->data[history->jump_id]);
         }
         break;
     case FORWARD:
-        url->jump_id += jump_val;
-        if (url->jump_id > url->tail - 1)
+        history->jump_id += jump_val;
+        if (history->jump_id > history->tail - 1)
         {
-            url->jump_id = url->tail - 1;
-            queue_push(history, url->data[url->jump_id]);
+            history->jump_id = history->tail - 1;
+            queue_push(history, history->data[history->jump_id]);
         }
         else 
         {
-            queue_push(history, url->data[url->jump_id]);
+            queue_push(history, history->data[history->jump_id]);
         }
         break;
     default: 
