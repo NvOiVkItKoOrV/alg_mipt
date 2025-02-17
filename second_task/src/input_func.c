@@ -6,7 +6,7 @@ void user_interface()
     size_t jump_counter = 0;
     queue_t* history = queue_ctor();
     queue_t* url = queue_ctor();
-    
+
     while(is_browsing)
     {  
         proc_buf_val(&jump_counter, &is_browsing, history, url);
@@ -63,7 +63,7 @@ void make_browser_action(const char* command, const char* command_parameter, siz
         *is_browsing = false;
 }
 
-
+//TODO: check indexes of data!!!
 void jump_func(side2jump_t side2jump, const int jump_val,  queue_t* history, queue_t* url)
 {
     switch(side2jump)
@@ -73,7 +73,7 @@ void jump_func(side2jump_t side2jump, const int jump_val,  queue_t* history, que
         if (url->jump_id < 0)
         {
             url->jump_id = 0;
-            queue_push(history, "homepage");
+            queue_push(history, url->data[url->jump_id]);
         }
         else    
         {
@@ -82,7 +82,7 @@ void jump_func(side2jump_t side2jump, const int jump_val,  queue_t* history, que
         break;
     case FORWARD:
         url->jump_id += jump_val;
-        if (url->jump_id > url->tail)
+        if (url->jump_id > url->tail - 1)
         {
             url->jump_id = url->tail - 1;
             queue_push(history, url->data[url->jump_id]);

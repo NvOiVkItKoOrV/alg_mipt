@@ -8,6 +8,7 @@ queue_t* queue_ctor()
     queue->head     = 0;
     queue->jump_id = 0;
     queue->data = (char**)calloc(queue->capacity, sizeof(char*));
+    queue_push(queue, "homepage");
     return queue;
 }
 
