@@ -61,7 +61,7 @@ void make_browser_action(const char* command, const char* command_parameter, siz
         *is_browsing = false;
 }
 
-//TODO: check indexes of data!!!
+
 void jump_func(side2jump_t side2jump, const int jump_val,  queue_t* history)
 {
     switch(side2jump)
