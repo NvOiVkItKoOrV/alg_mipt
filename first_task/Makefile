@@ -36,8 +36,7 @@ $(OBJ)list_func.o: $(SRC)list_func.c | $(OBJ)
 	@ g++ -c -I./include $(FLAGS) $< -o $(OBJ)list_func.o
 
 run: $(BIN)my_program	
-	@ ./$(BIN)my_program /a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a
-
+	@ ./$(BIN)my_program /sdf/asdf/df/../dfsdf/./sadf/sfadf/sdfsfsdfsd
 
 clean:
 	@ rm -rf $(OBJ) $(BIN)

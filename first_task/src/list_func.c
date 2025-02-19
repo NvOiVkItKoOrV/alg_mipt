@@ -38,6 +38,8 @@ char* list_pop(list_info_t* lst_info)
         char* last_pop_elem  = (char*)calloc(LIST_CAPACITY, sizeof(char));
         strcpy(last_pop_elem, (lst_info->head)->dir_name);
         free(lst_info->head);
+        lst_info->head = NULL;
+        lst_info->tail = NULL;
         return last_pop_elem;
     }
 
@@ -58,9 +60,13 @@ void list_push(list_info_t* lst_info, char* push_elem)
 {
     if (lst_info->head == NULL)
     {
-        lst_info->head = (list_t*)calloc(LIST_CAPACITY, sizeof(list_t));
+        lst_info->head = (list_t*)calloc(1, sizeof(list_t));
         lst_info->tail = lst_info->head;
+        lst_info->head->dir_name = (char*)calloc(LIST_CAPACITY, sizeof(char));
+        strcpy((lst_info->head)->dir_name, push_elem);
+        return;
     }
+
     list_t* new_tail = (list_t*)calloc(1, sizeof(list_t));
 
     new_tail->prev = lst_info->tail;

@@ -63,10 +63,9 @@ void add_dir_name2data(list_info_t* lst_info, char* str, int* str_symb_counter)
     for (; str[*str_symb_counter] != '/' &&
            str[*str_symb_counter] != '\0';
            buf_rec_size++, (*str_symb_counter)++)
-        {   
+    {   
         buf4copying_dir[buf_rec_size] = str[(*str_symb_counter)];
     }
-
     list_push(lst_info, buf4copying_dir);
     free(buf4copying_dir);
 }
@@ -86,6 +85,8 @@ char* make_final_path(list_info_t* lst_info)
             buf_counter = buf_counter + strlen(counter->dir_name);
         }
     }
+    
+    path_dots_deleter(lst_info);
     list_dtor(lst_info);
     return buf;
 }
@@ -93,6 +94,9 @@ char* make_final_path(list_info_t* lst_info)
 
 void path_dots_deleter(list_info_t* lst_info)
 {
+    for(list_t* cmp = lst_info->head; cmp != lst_info->tail; cmp = cmp->next)
+        printf("%s\n", cmp->dir_name);
+        printf("%s\n", lst_info->tail);
     int double_dots_counter = 0;
     const char double_dots[] = "..";
     const char dot[] = ".";
@@ -102,18 +106,21 @@ void path_dots_deleter(list_info_t* lst_info)
     {
         if(!strcmp(counter->dir_name, double_dots))
         {
-            list_pop(lst_info);
+            char* str2delete = list_pop(lst_info);
+            free(str2delete);
             double_dots_counter++;
         }
         else if(!strcmp(counter->dir_name, dot))
         {
-            list_pop(lst_info);
+            char* str2delete = list_pop(lst_info);
+            free(str2delete);
         }
         else
         {   
             if (double_dots_counter)
             {
-                list_pop(lst_info);
+                char* str2delete = list_pop(lst_info);
+                free(str2delete);
                 double_dots_counter--;
             }
         }
