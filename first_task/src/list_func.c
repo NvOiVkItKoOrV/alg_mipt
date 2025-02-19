@@ -60,7 +60,6 @@ void list_push(list_info_t* lst_info, char* push_elem)
     {
         lst_info->head = (list_t*)calloc(LIST_CAPACITY, sizeof(list_t));
         lst_info->tail = lst_info->head;
-        printf("daskdjfhasdkfhsalkdjfkajsdfk");
     }
     list_t* new_tail = (list_t*)calloc(1, sizeof(list_t));
 
