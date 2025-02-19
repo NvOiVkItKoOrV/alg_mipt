@@ -12,6 +12,7 @@ void extra_slashes_deleter(const char* str, char* path)
                 path[path_counter++] = str[str_counter++];
                 str_counter = skip_extra_slashes(str, str_counter);
                 break;
+
             default:
                 path[path_counter++] = str[str_counter++];
                 break;
@@ -73,20 +74,17 @@ void add_dir_name2data(list_info_t* lst_info, char* str, int* str_symb_counter)
 
 char* make_final_path(list_info_t* lst_info)
 {
+    path_dots_deleter(lst_info);
     char* buf = (char*)calloc(PATH_MAX_LENGTH, sizeof(char));
     int buf_counter = 0;
-    for (list_t* counter = lst_info->head; counter < lst_info->tail; counter = counter->next)
+    list_t* counter = lst_info->head;
+    for (; counter != lst_info->tail; counter = counter->next)
     {
-        if(*(counter->dir_name) != '\0')
-        {
-            memset(buf + buf_counter, '/', 1);
-            buf_counter++;
-            strcpy(buf + buf_counter, counter->dir_name);
-            buf_counter = buf_counter + strlen(counter->dir_name);
-        }
+        buf[buf_counter++] = '/';
+        strncpy(buf + buf_counter, counter->dir_name, strlen(counter->dir_name));
     }
-    
-    path_dots_deleter(lst_info);
+    strncpy(buf + buf_counter, counter->dir_name, strlen(counter->dir_name));
+
     list_dtor(lst_info);
     return buf;
 }
@@ -94,35 +92,54 @@ char* make_final_path(list_info_t* lst_info)
 
 void path_dots_deleter(list_info_t* lst_info)
 {
-    for(list_t* cmp = lst_info->head; cmp != lst_info->tail; cmp = cmp->next)
-        printf("%s\n", cmp->dir_name);
-        printf("%s\n", lst_info->tail);
     int double_dots_counter = 0;
     const char double_dots[] = "..";
     const char dot[] = ".";
-    for (list_t* counter = lst_info->tail;
-             counter != lst_info->head; 
-             counter = counter->prev)
+    list_t* counter = lst_info->tail;
+
+    if (!strcmp((lst_info->head)->dir_name, double_dots))
     {
+        printf("Wrong path");
+        exit(0);
+    }
+    else if (!strcmp((lst_info->head)->dir_name, double_dots))
+    {
+        list_t* list2rm = lst_info->head;
+        lst_info->head = (lst_info->head)->next;
+        lst_info->head->prev = NULL;
+        free(list2rm);
+    }
+
+    while (counter != lst_info->head)        
+    {
+        printf("%s-=\n", counter->dir_name);
         if(!strcmp(counter->dir_name, double_dots))
         {
-            char* str2delete = list_pop(lst_info);
+            list_t* new_counter_val = counter->prev;
+            char* str2delete = list_pop(counter);
+            counter = new_counter_val;
             free(str2delete);
             double_dots_counter++;
         }
         else if(!strcmp(counter->dir_name, dot))
         {
-            char* str2delete = list_pop(lst_info);
+            list_t* new_counter_val = counter->prev;
+            char* str2delete = list_pop(counter);
+            counter = new_counter_val;
             free(str2delete);
         }
         else
         {   
             if (double_dots_counter)
-            {
-                char* str2delete = list_pop(lst_info);
+            {   
+                list_t* new_counter_val = counter->prev;
+                char* str2delete = list_pop(counter);
+                counter = new_counter_val;
                 free(str2delete);
                 double_dots_counter--;
             }
+            else
+                counter = counter->prev;
         }
 
     }

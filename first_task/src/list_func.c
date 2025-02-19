@@ -25,33 +25,15 @@ void list_dtor(list_info_t* lst_info)
 }
 
 
-char* list_pop(list_info_t* lst_info)
+char* list_pop(list_t* lst)
 {
-    if (lst_info->head == NULL)
-    {
-        printf("Nothing to pop!\n");
-        exit(0);
-    }
-    
-    if (lst_info->head == lst_info->tail)
-    {
-        char* last_pop_elem  = (char*)calloc(LIST_CAPACITY, sizeof(char));
-        strcpy(last_pop_elem, (lst_info->head)->dir_name);
-        free(lst_info->head);
-        lst_info->head = NULL;
-        lst_info->tail = NULL;
-        return last_pop_elem;
-    }
 
     char* pop_elem = (char*)calloc(LIST_CAPACITY, sizeof(char));
-    strcpy(pop_elem, (lst_info->tail)->dir_name);
-
-    list_t* new_tail = (lst_info->tail)->prev;
-    free((lst_info->tail)->dir_name);
-    free(lst_info->tail);
-
-    lst_info->tail = new_tail;
-    (lst_info->tail)->next = NULL;
+    strcpy(pop_elem, lst->dir_name);
+    free(lst->dir_name);
+    lst->prev->next = lst->next;
+    lst->next->prev = lst->prev;
+    free(lst);
     return pop_elem;
 }
 
@@ -64,6 +46,7 @@ void list_push(list_info_t* lst_info, char* push_elem)
         lst_info->tail = lst_info->head;
         lst_info->head->dir_name = (char*)calloc(LIST_CAPACITY, sizeof(char));
         strcpy((lst_info->head)->dir_name, push_elem);
+        printf("<%s><%s>\n", (lst_info->tail)->dir_name, push_elem);
         return;
     }
 
@@ -74,4 +57,5 @@ void list_push(list_info_t* lst_info, char* push_elem)
     lst_info->tail = new_tail;
     (lst_info->tail)->dir_name = (char*)calloc(LIST_CAPACITY, sizeof(char));
     strcpy((lst_info->tail)->dir_name, push_elem);
+    printf("<%s><%s>\n", (lst_info->tail)->dir_name, push_elem);
 }
