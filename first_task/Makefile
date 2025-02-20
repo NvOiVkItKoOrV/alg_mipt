@@ -14,7 +14,7 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
         -Wlarger-than=8192 -Wstack-usage=8192 -pie -fPIE -Werror=vla \
         -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
-# Ensure the obj/ and bin/ directories exist
+
 $(OBJ):
 	@ mkdir -p $(OBJ)
 
@@ -35,8 +35,9 @@ $(OBJ)path_convertor.o: $(SRC)path_convertor.c | $(OBJ)
 $(OBJ)list_func.o: $(SRC)list_func.c | $(OBJ)
 	@ g++ -c -I./include $(FLAGS) $< -o $(OBJ)list_func.o
 
+#type input path there as 2nd argument 
 run: $(BIN)my_program	
-	@ ./$(BIN)my_program /sdf/asdf/df/../dfsdf/./sadf/sfadf/sdfsfsdfsd
+	@ ./$(BIN)my_program 
 
 clean:
 	@ rm -rf $(OBJ) $(BIN)

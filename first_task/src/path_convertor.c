@@ -74,16 +74,20 @@ void add_dir_name2data(list_info_t* lst_info, char* str, int* str_symb_counter)
 
 char* make_final_path(list_info_t* lst_info)
 {
-    path_dots_deleter(lst_info);
+    path_dots_deleter(lst_info); 
+
     char* buf = (char*)calloc(PATH_MAX_LENGTH, sizeof(char));
     int buf_counter = 0;
-    list_t* counter = lst_info->head;
-    for (; counter != lst_info->tail; counter = counter->next)
+    
+    for (list_t* counter = lst_info->head; counter != lst_info->tail; counter = counter->next)
     {
-        buf[buf_counter++] = '/';
-        strncpy(buf + buf_counter, counter->dir_name, strlen(counter->dir_name));
+        buf[buf_counter] = '/';
+        buf_counter++;
+        strcpy(buf + buf_counter, counter->dir_name);
+        buf_counter += strlen(counter->dir_name);
     }
-    strncpy(buf + buf_counter, counter->dir_name, strlen(counter->dir_name));
+    buf[buf_counter++] = '/';
+    strcpy(buf + buf_counter, lst_info->tail->dir_name);
 
     list_dtor(lst_info);
     return buf;
@@ -92,6 +96,8 @@ char* make_final_path(list_info_t* lst_info)
 
 void path_dots_deleter(list_info_t* lst_info)
 {
+
+
     int double_dots_counter = 0;
     const char double_dots[] = "..";
     const char dot[] = ".";
@@ -102,39 +108,38 @@ void path_dots_deleter(list_info_t* lst_info)
         printf("Wrong path");
         exit(0);
     }
-    else if (!strcmp((lst_info->head)->dir_name, double_dots))
+    else if (!strcmp((lst_info->head)->dir_name, dot))
     {
         list_t* list2rm = lst_info->head;
         lst_info->head = (lst_info->head)->next;
         lst_info->head->prev = NULL;
+        free(list2rm->dir_name);
         free(list2rm);
     }
 
-    while (counter != lst_info->head)        
+    for (list_t* counter = lst_info->tail;
+        counter != lst_info->head;)
     {
-        printf("%s-=\n", counter->dir_name);
+        if (counter->prev == NULL)
+        exit(0);
+
         if(!strcmp(counter->dir_name, double_dots))
         {
-            list_t* new_counter_val = counter->prev;
-            char* str2delete = list_pop(counter);
-            counter = new_counter_val;
+            char* str2delete = list_pop(&counter);
             free(str2delete);
             double_dots_counter++;
+            
         }
         else if(!strcmp(counter->dir_name, dot))
         {
-            list_t* new_counter_val = counter->prev;
-            char* str2delete = list_pop(counter);
-            counter = new_counter_val;
+            char* str2delete = list_pop(&counter);
             free(str2delete);
         }
         else
         {   
             if (double_dots_counter)
-            {   
-                list_t* new_counter_val = counter->prev;
-                char* str2delete = list_pop(counter);
-                counter = new_counter_val;
+            {
+                char* str2delete = list_pop(&counter);
                 free(str2delete);
                 double_dots_counter--;
             }
@@ -142,7 +147,7 @@ void path_dots_deleter(list_info_t* lst_info)
                 counter = counter->prev;
         }
 
-    }
+    } 
 
     if (double_dots_counter != 0)
     {

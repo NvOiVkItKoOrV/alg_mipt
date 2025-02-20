@@ -25,15 +25,18 @@ void list_dtor(list_info_t* lst_info)
 }
 
 
-char* list_pop(list_t* lst)
+char* list_pop(list_t** lst)
 {
 
     char* pop_elem = (char*)calloc(LIST_CAPACITY, sizeof(char));
-    strcpy(pop_elem, lst->dir_name);
-    free(lst->dir_name);
-    lst->prev->next = lst->next;
-    lst->next->prev = lst->prev;
-    free(lst);
+    strcpy(pop_elem, (*lst)->dir_name);
+    free((*lst)->dir_name);
+
+    (*lst)->prev->next = (*lst)->next;
+    (*lst)->next->prev = (*lst)->prev;
+    list_t* lst2rm = *lst;
+    (*lst) = (*lst)->prev;
+    free(lst2rm);
     return pop_elem;
 }
 
@@ -46,7 +49,6 @@ void list_push(list_info_t* lst_info, char* push_elem)
         lst_info->tail = lst_info->head;
         lst_info->head->dir_name = (char*)calloc(LIST_CAPACITY, sizeof(char));
         strcpy((lst_info->head)->dir_name, push_elem);
-        printf("<%s><%s>\n", (lst_info->tail)->dir_name, push_elem);
         return;
     }
 
@@ -57,5 +59,4 @@ void list_push(list_info_t* lst_info, char* push_elem)
     lst_info->tail = new_tail;
     (lst_info->tail)->dir_name = (char*)calloc(LIST_CAPACITY, sizeof(char));
     strcpy((lst_info->tail)->dir_name, push_elem);
-    printf("<%s><%s>\n", (lst_info->tail)->dir_name, push_elem);
 }

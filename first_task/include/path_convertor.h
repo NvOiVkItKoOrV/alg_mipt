@@ -31,7 +31,7 @@ typedef struct list_info_t
 
 list_info_t* list_ctor();
 void list_dtor(list_info_t* lst_info);
-char* list_pop(list_t* lst);
+char* list_pop(list_t** lst);
 void list_push(list_info_t* lst_info, char* push_elem);
 
 void extra_slashes_deleter(const char* str, char* path);
