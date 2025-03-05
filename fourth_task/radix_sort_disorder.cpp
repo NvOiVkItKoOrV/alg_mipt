@@ -4,9 +4,9 @@
 #include <chrono>
 #include <random>
 
-// Функция Radix Sort (поразрядная сортировка)
+
 void radixSort(std::vector<uint32_t>& arr) {
-    constexpr int BITS = 8;  // Обрабатываем по 8 бит за проход (байт)
+    constexpr int BITS = 8;  //8 бит за проход
     constexpr int BASE = 1 << BITS;  // 256 значений
     constexpr int MASK = BASE - 1;
     
@@ -14,28 +14,24 @@ void radixSort(std::vector<uint32_t>& arr) {
     for (int shift = 0; shift < 32; shift += BITS) {
         std::vector<int> count(BASE, 0);
 
-        // Подсчитываем количество элементов для каждой корзины
         for (uint32_t num : arr) {
             count[(num >> shift) & MASK]++;
         }
 
-        // Преобразуем в префиксные суммы для определения позиций элементов
         for (int i = 1; i < BASE; i++) {
             count[i] += count[i - 1];
         }
 
-        // Размещение элементов в правильные позиции
         for (int i = arr.size() - 1; i >= 0; i--) {
             uint32_t num = arr[i];
             temp[--count[(num >> shift) & MASK]] = num;
         }
 
-        // Копируем отсортированные данные обратно
         arr.swap(temp);
     }
 }
 
-// Функция генерации частично перемешанного массива
+
 std::vector<uint32_t> generatePartiallySortedArray(size_t N, double disorder) {
     std::vector<uint32_t> arr(N);
     for (size_t i = 0; i < N; ++i)
@@ -53,7 +49,7 @@ std::vector<uint32_t> generatePartiallySortedArray(size_t N, double disorder) {
     return arr;
 }
 
-// Функция измерения времени выполнения
+
 template <typename Func>
 double measureTime(Func sortFunction, std::vector<uint32_t>& arr) {
     auto start = std::chrono::high_resolution_clock::now();
