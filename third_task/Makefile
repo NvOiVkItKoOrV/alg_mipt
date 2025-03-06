@@ -1,7 +1,6 @@
 OBJ = obj/
 BIN = bin/
 
-FLAGS =  -Wall -Wextra -fsanitize=address
 
 $(OBJ):
 	@ mkdir -p $(OBJ)
@@ -12,10 +11,10 @@ $(BIN):
 all: $(BIN)/my_program
 
 $(BIN)/my_program: $(OBJ)/main.o | $(BIN)
-	@ g++ $(FLAGS) $^ -o $@
+	@ g++ $^ -o $@
 
 $(OBJ)/main.o: main.c | $(OBJ)
-	@ g++ -c $(FLAGS) $< -o $@
+	@ g++ -c $< -o $@
 
 run: $(BIN)/my_program
 	@ ./$(BIN)/my_program

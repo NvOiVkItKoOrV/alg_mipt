@@ -1,167 +1,124 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <ctime>
+#include <iomanip>
 
+using namespace std;
 
-void swap(int *elem_1, int *elem_2)
-{
-    int sw = *elem_1;
-    *elem_1 = *elem_2;
-    *elem_2 = sw;
-}
-
-void my_bubble_sort(int data[], int size)
-{
-    for (int i = 0; i < size-1; i++)
-    {
-        for (int j = 0; j < size-i-1; j++)
-        {
-            if (data[j] > data[j+1])
-                swap(&data[j], &data[j+1]);
-        }
-    }
-}
-
-
-void my_shaker_sort(int data[], int size)
-{
-    int swapped = 1;
-    int start = 0;
-    int end = size - 1;
-
-    while (swapped)
-    {
-        swapped = 0;
-        // left-->right
-        for (int i = start; i < end; i++)
-        {
-            if (data[i] > data[i+1])
-            {
-                swap(&data[i], &data[i+1]);
-                swapped = 1;
+// Пузырьковая сортировка
+void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    bool swapped;
+    do {
+        swapped = false;
+        for (int i = 1; i < n; ++i) {
+            if (arr[i - 1] > arr[i]) {
+                swap(arr[i - 1], arr[i]);
+                swapped = true;
             }
         }
-
-        if (!swapped)
-            break;
-
-        swapped = 0;
-        end--;
-
-        // left<--right
-        for (int i = end - 1; i >= start; i--)
-        {
-            if (data[i] > data[i+1])
-            {
-                swap(&data[i], &data[i+1]);
-                swapped = 1;
-            }
-        }
-        start++;
-    }
+        --n;
+    } while (swapped);
 }
 
-
-void my_comb_sort(int data[], int size)
-{
-    int gap = size;
-    float shrink = 1.3;
-    int sorted = 0;
-
-    while (!sorted)
-    {
-        gap = (int)(gap / shrink);
-        if (gap <= 1)
-        {
-            gap = 1;
-            sorted = 1;
+// Шейкерная сортировка
+void shakerSort(vector<int>& arr) {
+    bool swapped;
+    int left = 0, right = arr.size() - 1;
+    do {
+        swapped = false;
+        for (int i = left; i < right; ++i) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                swapped = true;
+            }
         }
+        --right;
+        for (int i = right; i > left; --i) {
+            if (arr[i] < arr[i - 1]) {
+                swap(arr[i], arr[i - 1]);
+                swapped = true;
+            }
+        }
+        ++left;
+    } while (swapped);
+}
 
-        for (int i = 0; i + gap < size; i++)
-        {
-            if (data[i] > data[i+gap])
-            {
-                swap(&data[i], &data[i+gap]);
-                sorted = 0;
+// Сортировка расческой
+void combSort(vector<int>& arr) {
+    int gap = arr.size();
+    const double shrinkFactor = 1.3;
+    bool swapped = true;
+    while (gap > 1 || swapped) {
+        gap = max(1, int(gap / shrinkFactor));
+        swapped = false;
+        for (int i = 0; i + gap < arr.size(); ++i) {
+            if (arr[i] > arr[i + gap]) {
+                swap(arr[i], arr[i + gap]);
+                swapped = true;
             }
         }
     }
 }
 
-
-int is_sorted(int data[], int size)
-{
-    for (int i = 0; i < size-1; i++)
-    {
-        if (data[i] > data[i+1]) 
-            return 0;
+// Функция для создания массива с заданной степенью перемешанности
+vector<int> generateShuffledArray(int size, double shufflePercentage) {
+    vector<int> arr(size);
+    for (int i = 0; i < size; ++i) {
+        arr[i] = i; // Заполняем отсортированным массивом
     }
-    return 1;
-}
-
-
-
-void generate_array(int data[], int size, float sortedness)
-{
-    for (int i = 0; i < size; i++)
-        data[i] = i;
-
-    int shuffle_count = (int)(size * (1 - sortedness));
-    for (int i = 0; i < shuffle_count; i++)
-    {
-        int a = rand() % size;
-        int b = rand() % size;
-        swap(&data[a], &data[b]);
+    int shuffleCount = (size * shufflePercentage) / 100; // Количество элементов для перемешивания
+    for (int i = 0; i < shuffleCount; ++i) {
+        swap(arr[rand() % size], arr[rand() % size]);
     }
+    return arr;
 }
 
-
-long long measure_time_ns(void (*sort_func)(int[], int), int data[], int size)
-{
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start); 
-    sort_func(arr, size);
-    clock_gettime(CLOCK_MONOTONIC, &end);   
-
-    long long time_ns = (end.tv_sec - start.tv_sec) * 1000000000LL + (end.tv_nsec - start.tv_nsec);
-    return time_ns;
+// Функция для измерения времени сортировки в наносекундах
+long long measureTime(void (*sortFunc)(vector<int>&), vector<int> arr) {
+    clock_t start = clock();
+    sortFunc(arr);
+    clock_t end = clock();
+    return static_cast<long long>(end - start) * 1'000'000'000 / CLOCKS_PER_SEC;
 }
 
+int main() {
+    srand(time(nullptr)); // Инициализация генератора случайных чисел
 
-int main()
-{
-    srand(time(NULL));
+    // Размеры массивов
+    vector<int> sizes = {10, 100, 1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
 
+    // Степени перемешанности
+    vector<double> shufflePercentages = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
 
-    int sizes[] = {10, 100, 1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
-    int data_sz = sizeof(sizes)/sizeof(sizes[0]);
+    // Заголовок таблицы
+    cout << "Size, Sortedness, Bubble (ns), Shaker (ns), Comb (ns)\n";
 
+    // Перебор всех размеров массивов
+    for (int size : sizes) {
+        // Перебор всех степеней перемешанности
+        for (double shuffle : shufflePercentages) {
+            // Генерация массива с заданной степенью перемешанности
+            vector<int> arr = generateShuffledArray(size, shuffle);
 
-    float sortedness_levels[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-    int sortedness_sz = sizeof(sortedness_levels)/sizeof(sortedness_levels[0]);
+            // Копии массива для каждой сортировки
+            vector<int> arrBubble = arr;
+            vector<int> arrShaker = arr;
+            vector<int> arrComb = arr;
 
+            // Измерение времени для каждой сортировки
+            long long timeBubble = measureTime(bubbleSort, arrBubble);
+            long long timeShaker = measureTime(shakerSort, arrShaker);
+            long long timeComb = measureTime(combSort, arrComb);
 
-    for (int i = 0; i < data_sz; i++)
-    {
-        int data_size = sizes[i];
-        int *arr = (int*)calloc(data_size, sizeof(int));
-
-
-        for (int j = 0; j < sortedness_sz; j++)
-        {
-            float sortedness = sortedness_levels[j];
-            generate_array(arr, data_size, sortedness);
-
-
-            long long time_bubble_ns = measure_time_ns(my_bubble_sort, arr, data_size);
-            long long time_shaker_ns = measure_time_ns(my_shaker_sort, arr, data_size);
-            long long time_comb_ns   = measure_time_ns(my_comb_sort, arr, data_size);
-
-
-            printf("Size: %d, Sortedness: %.2f, Bubble: %lld ns, Shaker: %lld ns, Comb: %lld ns\n",
-                    data_size, sortedness, time_bubble_ns, time_shaker_ns, time_comb_ns);
+            // Вывод результатов в одну строку
+            cout << "Size: " << size
+                 << ", Sortedness: " << fixed << setprecision(2) << shuffle / 100.0
+                 << ", Bubble: " << timeBubble << " ns"
+                 << ", Shaker: " << timeShaker << " ns"
+                 << ", Comb: " << timeComb << " ns\n";
         }
-        free(arr);
     }
 
     return 0;
